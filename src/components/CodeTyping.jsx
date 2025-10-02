@@ -30,7 +30,7 @@ const String = styled.span`
 `;
 
 const Symbol = styled.span`
-  color: #abb2bf; /* светло-серый */
+  color: #abb2bf; /* серый */
 `;
 
 const Cursor = styled.span`
@@ -45,6 +45,7 @@ const Cursor = styled.span`
 `;
 
 function CodeTyping() {
+    // список профессий
     const words = [
         <>
             <Keyword>const</Keyword> <Variable>role</Variable>{" "}
@@ -67,16 +68,16 @@ function CodeTyping() {
     const [text, setText] = useState("");
     const [wordIndex, setWordIndex] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [showTerminal, setShowTerminal] = useState(false);
+    const [showRoles, setShowRoles] = useState(false);
 
-    // имитация запуска npm run dev
+    // сначала печатается приветствие, потом включаются роли
     useEffect(() => {
-        const startDelay = setTimeout(() => setShowTerminal(true), 1500);
+        const startDelay = setTimeout(() => setShowRoles(true), 2000);
         return () => clearTimeout(startDelay);
     }, []);
 
     useEffect(() => {
-        if (!showTerminal) return;
+        if (!showRoles) return;
 
         const currentWord = words[wordIndex].props.children
             .map((el) => (typeof el === "string" ? el : el.props.children))
@@ -103,7 +104,7 @@ function CodeTyping() {
         }
 
         return () => clearTimeout(timer);
-    }, [text, isDeleting, wordIndex, showTerminal]);
+    }, [text, isDeleting, wordIndex, showRoles]);
 
     return (
         <Terminal>
@@ -116,14 +117,27 @@ function CodeTyping() {
                 <Gray>&gt;</Gray> Network: use --host to expose
             </div>
 
-            {showTerminal && (
+            {/* Приветствие */}
+            <div>
+                <Keyword>console</Keyword>.<Variable>log</Variable>
+                <Symbol>(</Symbol>
+                <String>"Hi! I`am Aleks"</String>
+                <Symbol>);</Symbol>
+            </div>
+
+            {/* Динамические роли */}
+            {showRoles && (
                 <div>
                     {words[wordIndex].props.children.map((el, i) => {
                         if (typeof el === "string") {
                             return <span key={i}>{el.slice(0, text.length)}</span>;
                         }
                         if (typeof el.props.children === "string") {
-                            return React.cloneElement(el, { key: i }, el.props.children.slice(0, text.length));
+                            return React.cloneElement(
+                                el,
+                                { key: i },
+                                el.props.children.slice(0, text.length)
+                            );
                         }
                         return null;
                     })}
